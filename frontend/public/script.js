@@ -21,33 +21,29 @@ function updateChartAndResults() {
     return;
   }
 
+  // Calculate costs
   const typicalDailyCost = (weekdayRate * 5 + saturdayRate + sundayRate) * typicalHours / 7;
   const additionalDailyCost = (weekdayRate * 5 + saturdayRate + sundayRate) * (typicalHours + additionalHours) / 7;
 
+  // Prepare data for the chart
   const labels = [];
   const cumulativeCostsNoBreakdown = [];
   const cumulativeCostsWithBreakdown = [];
   let costNoBreakdown = 0;
-  let costWithBreakdown = 0;
+  let costWithBreakdown = replacementCost; // Start with replacement cost for repair scenario
 
-  // Generate data for failure-to-replacement period
   for (let i = 0; i <= additionalDays; i++) {
     labels.push(i);
-    costNoBreakdown += typicalDailyCost;
-    costWithBreakdown += additionalDailyCost;
+    costNoBreakdown += additionalDailyCost;
+    costWithBreakdown += typicalDailyCost;
 
     cumulativeCostsNoBreakdown.push(costNoBreakdown);
     cumulativeCostsWithBreakdown.push(costWithBreakdown);
   }
 
-  // Debugging
-  console.log("Labels:", labels);
-  console.log("Cumulative Costs (No Breakdown):", cumulativeCostsNoBreakdown);
-  console.log("Cumulative Costs (With Breakdown):", cumulativeCostsWithBreakdown);
-
-  // Total costs for failure-to-replacement period
-  const totalCostWithoutReplacement = additionalDailyCost * additionalDays;
-  const totalCostWithReplacement = replacementCost;
+  // Total costs using the cumulative array
+  const totalCostWithoutReplacement = cumulativeCostsNoBreakdown[cumulativeCostsNoBreakdown.length - 1];
+  const totalCostWithReplacement = cumulativeCostsWithBreakdown[cumulativeCostsWithBreakdown.length - 1];
 
   // Calculate savings and ROI
   const savingsDuringFailurePeriod = totalCostWithoutReplacement - totalCostWithReplacement;
@@ -70,14 +66,14 @@ function updateChartAndResults() {
       labels: labels, // Days relative to failure
       datasets: [
         {
-          label: 'No Breakdown',
+          label: 'Without Replacement',
           data: cumulativeCostsNoBreakdown,
           borderColor: 'blue',
           borderDash: [10, 5],
           fill: false,
         },
         {
-          label: 'With Breakdown',
+          label: 'With Immediate Replacement',
           data: cumulativeCostsWithBreakdown,
           borderColor: 'red',
           fill: false,
