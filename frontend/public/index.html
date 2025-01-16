@@ -8,7 +8,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container">
+  <div id="loading-screen" style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f9f9f9; color: #333; font-family: Arial, sans-serif; font-size: 1.2em; text-align: center;">
+    <p>🔄 Please wait while the simulator starts up... This might take up to 50 seconds.</p>
+  </div>
+  <div class="container" id="app-content" style="display: none;">
     <h1>ROI Simulation for Assistive Technology</h1>
 
     <!-- Input Form -->
@@ -72,5 +75,31 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
   <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const loadingScreen = document.getElementById("loading-screen");
+      const appContent = document.getElementById("app-content");
+
+      // Simulate a backend readiness check
+      fetch('/status')
+        .then(response => {
+          if (response.ok) {
+            loadingScreen.style.display = "none";
+            appContent.style.display = "block";
+          } else {
+            setTimeout(() => {
+              loadingScreen.style.display = "none";
+              appContent.style.display = "block";
+            }, 50000); // Default 50-second delay
+          }
+        })
+        .catch(() => {
+          setTimeout(() => {
+            loadingScreen.style.display = "none";
+            appContent.style.display = "block";
+          }, 50000); // Default 50-second delay
+        });
+    });
+  </script>
 </body>
 </html>
