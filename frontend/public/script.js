@@ -131,3 +131,31 @@ document.getElementById('roiHelpButton').addEventListener('click', function () {
 document.getElementById('closeModal').addEventListener('click', function () {
   document.getElementById('roiModal').style.display = 'none';
 });
+
+// Handle potentially loing wait times while Render spins up
+document.addEventListener("DOMContentLoaded", () => {
+  const loadingScreen = document.getElementById("loading-screen");
+  const appContent = document.getElementById("app-content");
+
+  // Check if the backend is ready
+  fetch('/status')
+    .then(response => {
+      if (response.ok) {
+        loadingScreen.style.display = "none";
+        appContent.style.display = "block";
+      } else {
+        // Retry after a delay if the backend is not ready
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+          appContent.style.display = "block";
+        }, 50000); // 50 seconds delay
+      }
+    })
+    .catch(() => {
+      // Handle errors (e.g., network issues)
+      setTimeout(() => {
+        loadingScreen.style.display = "none";
+        appContent.style.display = "block";
+      }, 50000); // 50 seconds delay
+    });
+});
